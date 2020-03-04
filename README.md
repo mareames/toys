@@ -1,3 +1,3 @@
 # toys
-interview prep -- a few toy data structures
+a few toy data structures and simple algorithm implementations
 
