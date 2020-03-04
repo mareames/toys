@@ -1,2 +1,3 @@
 # toys
-interview prep -- toy data structures
+interview prep -- a few toy data structures
+
