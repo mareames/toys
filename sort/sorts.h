@@ -36,7 +36,7 @@ extern
 bool check_sort(long *data, uint len);
 
 extern
-void print_array(long *data, uint len, uint badelt);
+void print_array(long *data, uint len, int badelt);
 
 extern
 int compare(const void *left, const void * right);
@@ -46,6 +46,9 @@ void swap_elem(void *left, void *right);
 
 extern
 void insertion_sort(long *data, uint lo_ix, uint hi_ix);
+
+extern
+void insertion_sort_opt(long *data, uint lo_ix, uint hi_ix);
 
 extern
 void quicksort(long *data, uint lo_ix, uint hi_ix);

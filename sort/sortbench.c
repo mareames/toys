@@ -19,13 +19,14 @@ typedef enum {
   SORT_MIN        = 0,
 
   SORT_QSORT_LIBC = SORT_MIN,
-  SORT_INSERT     = 1,
-  SORT_QSORT      = 2,
-  SORT_QSORT_OPT  = 3,
-  SORT_QSORT_MT   = 4,
-  SORT_HEAP       = 5,
-  SORT_MERGE      = 6,
-  SORT_MERGE_OPT  = 7,
+  SORT_INSERT,
+  SORT_INSERT_OPT,
+  SORT_QSORT,
+  SORT_QSORT_OPT,
+  SORT_QSORT_MT,
+  SORT_HEAP,
+  SORT_MERGE,
+  SORT_MERGE_OPT,
 
   /* SORT_MAX: last value in sort_t */
   SORT_MAX        = SORT_MERGE_OPT
@@ -54,6 +55,16 @@ void sort(long *data, long *tmpdata, uint nelts, sort_t sort_method)
       return;
     }
     insertion_sort(data, 0, nelts - 1);
+    break;
+
+    case SORT_INSERT_OPT:
+    printf("sorting: sort method is insertion sort opt\n");
+    if (nelts > MAX_INSERT_SORT_NELTS*4) {
+      printf("(skipping as this sort is O(n^2), i.e., painfully slow "
+             "for so many elts)\n\n");
+      return;
+    }
+    insertion_sort_opt(data, 0, nelts - 1);
     break;
 
     case SORT_QSORT:

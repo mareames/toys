@@ -33,12 +33,13 @@ bool check_sort(long *data, uint len)
 
 
 // print out the array (for debugging)
-void print_array(long *data, uint len, uint badelt)
+void print_array(long *data, uint len, int badelt)
 {
-  const uint ELTS_PER_LINE = 5;
+  const uint ELTS_PER_LINE = 1;
   uint i;
 
-  printf("bad = %d\n\n", badelt);
+  if (badelt > 0)
+    printf("bad = %d\n\n", badelt);
 
   for (i = 0; i < len; i++) {
     printf("%ld ", data[i]);
