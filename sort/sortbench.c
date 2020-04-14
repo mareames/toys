@@ -15,7 +15,7 @@
 #include "sorts.h"
 
 typedef enum {
-  /* SORT_MIN: first value in sort_t */
+  // SORT_MIN: first value in sort_t
   SORT_MIN        = 0,
 
   SORT_QSORT_LIBC = SORT_MIN,
@@ -28,12 +28,20 @@ typedef enum {
   SORT_MERGE,
   SORT_MERGE_OPT,
 
-  /* SORT_MAX: last value in sort_t */
-  SORT_MAX        = SORT_MERGE_OPT
+  SORT_COUNTING,
+
+  // SORT_MAX: last value in sort_t
+  SORT_MAX        = SORT_COUNTING
 } sort_t;
 
-static
-void sort(long *data, long *tmpdata, uint nelts, sort_t sort_method)
+// returns true if data is sorted at the end of this function
+// returns false if we didn't sort
+//
+// assuming all the sorts are working correctly, we will only return
+// false for slow sort methods
+static bool
+sort(long *data, long *tmpdata, uint nelts, sort_t sort_method,
+     uint maxval /* only used by counting sort */)
 {
   struct timeval tv_start, tv_end;
   double sort_time;
@@ -52,7 +60,7 @@ void sort(long *data, long *tmpdata, uint nelts, sort_t sort_method)
     if (nelts > MAX_INSERT_SORT_NELTS) {
       printf("(skipping as this sort is O(n^2), i.e., painfully slow "
              "for so many elts)\n\n");
-      return;
+      return false;
     }
     insertion_sort(data, 0, nelts - 1);
     break;
@@ -62,7 +70,7 @@ void sort(long *data, long *tmpdata, uint nelts, sort_t sort_method)
     if (nelts > MAX_INSERT_SORT_NELTS*4) {
       printf("(skipping as this sort is O(n^2), i.e., painfully slow "
              "for so many elts)\n\n");
-      return;
+      return false;
     }
     insertion_sort_opt(data, 0, nelts - 1);
     break;
@@ -97,6 +105,11 @@ void sort(long *data, long *tmpdata, uint nelts, sort_t sort_method)
     merge_sort_opt(data, tmpdata, 0, nelts - 1);
     break;
 
+    case SORT_COUNTING:
+    printf("sorting: sort method is counting sort\n");
+    counting_sort(data, 0, nelts - 1, maxval);
+    break;
+
     default:
     assert(0);
   }
@@ -109,6 +122,8 @@ void sort(long *data, long *tmpdata, uint nelts, sort_t sort_method)
   assert(check_sort(data, nelts));
 
   printf("finished: sorted %u elements in %.2f seconds\n\n", nelts, sort_time);
+
+  return true;
 }
 
 static
@@ -116,21 +131,28 @@ void usage()
 {
   printf(
          "usage:\n\n"
-         "sorts [-k val | -m val]\n\n"
-         "where val is [1..1000]\n"
+         "sorts [-k val | -m val] [-c maxval]\n\n"
+         "where val is [1..1000] and maxval is [1..100,000,000]\n"
          "(default is \"-m 100\", i.e., sort a random array of "
-         "100 million long ints)\n\n"
+         "100 million long ints and omit counting sort)\n\n"
          );
   exit(-1);
 }
 
 // messy function to parse the command-line arguments
 static
-void parse_args(int argc, char * argv[], uint *nelts)
+void parse_args(int argc, char * argv[], uint *nelts,
+                bool *incl_count, uint *max_count_val)
 {
   int i;
   long val;
   uint num_elts = 0;
+
+  // should we do the counting sort or not?
+  bool do_counting_sort = false;
+  // if we're doing counting sort, what's the max value?
+  uint maxval = 0;
+
   // iterate through the command-line arguments, using the
   // ones we can make sense of
 
@@ -139,42 +161,69 @@ void parse_args(int argc, char * argv[], uint *nelts)
     return;
 
   i = 1;
-  if (strcmp(argv[i], "-k") == 0) {
+  while (i < argc) {
+    if (strcmp(argv[i], "-k") == 0) {
+      i++;
+      if (i == argc)
+        usage();
+      val = atoi(argv[i]);
+      if (0 > val || val > 1000)
+        usage();
+      num_elts = val * K;
+    }
+    else if (strcmp(argv[i], "-m") == 0) {
+      i++;
+      if (i == argc)
+        usage();
+      val = atoi(argv[i]);
+      if (0 > val || val > 1000)
+        usage();
+      num_elts = val * M;
+    }
+    else if (strcmp(argv[i], "-c") == 0) {
+      i++;
+      if (i == argc)
+        usage();
+      val = atoi(argv[i]);
+      if (0 > val || val > MAX_COUNTINGSORT_VALUE)
+        usage();
+      maxval = val;
+      do_counting_sort = true;
+    }
     i++;
-    if (i == argc)
-      usage();
-    val = atoi(argv[i]);
-    if (0 > val || val > 1000)
-      usage();
-    num_elts = val * K;
-  }
-  else if (strcmp(argv[i], "-m") == 0) {
-    i++;
-    if (i == argc)
-      usage();
-    val = atoi(argv[i]);
-    if (0 > val || val > 1000)
-      usage();
-    num_elts = val * M;
   }
 
   if (num_elts != 0)
     *nelts = num_elts;
+
+  if (do_counting_sort) {
+    *incl_count = true;
+    *max_count_val = maxval;
+  }
+  else {
+    *incl_count = false;
+  }
 }
 
 int main(int argc, char * argv[])
 {
-  long  *data;
-  long  *origdata;
-  long  *tmpdata;
+  long  *data     = NULL;
+  long  *origdata = NULL;
+  long  *tmpdata  = NULL;
+  long  *cmpdata  = NULL;
   uint   i;
   uint   seed;
   sort_t sort_idx;
   uint   nelts = DEFAULT_NELTS; // == 100 * M
 
-  parse_args(argc, argv, &nelts);
+  // counting sort stuff
+  bool   do_counting_sort = false;
+  uint   maxval;
 
-  /* allocate memory */
+  parse_args(argc, argv, &nelts,
+             &do_counting_sort, &maxval);
+
+  // allocate memory
   data = (long *) calloc(nelts, sizeof(long));
   if (data == NULL) {
     printf("error: cannot allocate memory for data\n");
@@ -193,27 +242,58 @@ int main(int argc, char * argv[])
     return -1;
   }
 
-  /* populate data */
+  cmpdata = (long *) calloc(nelts, sizeof(long));
+  if (cmpdata == NULL) {
+    printf("error: cannot allocate memory for cmpdata\n");
+    return -1;
+  }
+
+  // populate data
   seed = ((uint) time(NULL)) % 16384;
   printf("main: seed is %u\n", seed);
   printf("main: sorting %d elements\n\n", nelts);
 
   srandom(seed);
-  for(i = 0; i < nelts; ++i)
-    origdata[i] = random();
 
-  /* sort using different sorting methods */
+  // if we're doing counting sort, we need to limit the range of data values
+  // (to {0..maxval-1})
+  if (do_counting_sort) {
+    for (i = 0; i < nelts; ++i)
+      origdata[i] = abs(random() % maxval);
+  }
+  else {
+    for (i = 0; i < nelts; ++i)
+      origdata[i] = random();
+  }
+
+  // sort using different sorting methods
   for (sort_idx = SORT_MIN; sort_idx <= SORT_MAX; sort_idx++)
   {
-    /* initialize data so that every sort method starts with same input */
+    if (sort_idx == SORT_COUNTING && !do_counting_sort)
+      continue;
+
+    // initialize data so that every sort method starts with same input
     memcpy(data, origdata, nelts * sizeof(long));
 
-    /* sort it! */
-    sort(data, tmpdata, nelts, sort_idx);
+    // sort it!
+    if (sort(data, tmpdata, nelts, sort_idx, maxval) == false)
+      continue;
+
+    // now compare the sort with the previous sort method
+    if (sort_idx == SORT_MIN) {
+      memcpy(cmpdata, data, nelts * sizeof(long));
+    }
+    else {
+      if (!check_sort_cmp(cmpdata, data, nelts)) {
+        printf("\n**** sorted data is different than previous sort!\n");
+      }
+    }
+
   }
 
   // free calloc'd memory (even though the process is about to terminate ...)
   free(data);
   free(origdata);
+  free(tmpdata);
   return 0;
 }

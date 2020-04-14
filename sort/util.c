@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>  /* printf */
 #include <math.h>
+#include <string.h> /* memcmp */
 #include "sorts.h"
 
 // validate that the input data is actually sorted
@@ -31,6 +32,13 @@ bool check_sort(long *data, uint len)
   return sorted;
 }
 
+// validate that the two input data arrays are identical
+bool check_sort_cmp(long *data1, long *data2, uint len)
+{
+  uint i;
+
+  return (memcmp(data1, data2, len * sizeof(long)) == 0);
+}
 
 // print out the array (for debugging)
 void print_array(long *data, uint len, int badelt)

@@ -17,7 +17,8 @@ enum { K                      = 1024,
        MAX_INSERT_SORT_NELTS  = 256 * K,
        MIN_MERGE_SORT_NELTS   = 32,
        MIN_QUICKSORT_NELTS    = 32,
-       QSORT_THREAD_THRESHOLD = 65536
+       QSORT_THREAD_THRESHOLD = 65536,
+       MAX_COUNTINGSORT_VALUE = 100 * M
 };
 
 typedef unsigned int    uint;
@@ -34,6 +35,9 @@ typedef struct
 
 extern
 bool check_sort(long *data, uint len);
+
+extern
+bool check_sort_cmp(long *data1, long *data2, uint len);
 
 extern
 void print_array(long *data, uint len, int badelt);
@@ -65,5 +69,8 @@ void merge_sort(long *data, uint lo_ix, uint hi_ix);
 
 extern
 void merge_sort_opt(long *data, long *tmpdata, uint lo_ix, uint hi_ix);
+
+extern
+void counting_sort(long *data, uint lo_ix, uint hi_ix, uint maxval);
 
 #endif /* SORTS_H */

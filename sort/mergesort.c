@@ -1,6 +1,6 @@
 //
 // mergesort.c
-// 
+//
 // various optimizations of merge sort
 //
 // Copyright (c) 2019, 2020, Martin Reames
@@ -20,8 +20,8 @@
 // plus optional tmp array so we don't have to allocate it every time
 //
 // output is the merge of these two lists
-static 
-void merge(long *data, long *tmpdata, uint lo_ix, uint hi_ix)
+static void
+merge(long *data, long *tmpdata, uint lo_ix, uint hi_ix)
 {
   long  *tmp;
   uint   t; // tmp list iterator
@@ -42,7 +42,7 @@ void merge(long *data, long *tmpdata, uint lo_ix, uint hi_ix)
   i = lo_ix;
   j = mid + 1;
   t = 0;
-  
+
   while (i <= imax && j <= jmax) {
     if (compare(&data[i], &data[j]) < 0) {
       tmp[t] = data[i];
@@ -75,15 +75,16 @@ void merge(long *data, long *tmpdata, uint lo_ix, uint hi_ix)
   for (i = lo_ix, t = 0; t < nelts; i++, t++)
     data[i] = tmp[t];
   */
-  
-  
+
+
   // free the tmp array if we allocated it above
   if (tmpdata == NULL)
     free(tmp);
 }
 
 /* basic merge sort (recursive) */
-void merge_sort(long *data, uint lo_ix, uint hi_ix)
+void
+merge_sort(long *data, uint lo_ix, uint hi_ix)
 {
   uint mid = lo_ix + ((hi_ix - lo_ix) / 2);
 
@@ -97,7 +98,7 @@ void merge_sort(long *data, uint lo_ix, uint hi_ix)
       swap_elem(&data[lo_ix], &data[hi_ix]);
     return;
   }
-  
+
   merge_sort(data, lo_ix, mid);
   merge_sort(data, mid + 1, hi_ix);
 
@@ -105,7 +106,8 @@ void merge_sort(long *data, uint lo_ix, uint hi_ix)
 }
 
 /* optimized merge sort (recursive) */
-void merge_sort_opt(long *data, long *tmpdata, uint lo_ix, uint hi_ix)
+void
+merge_sort_opt(long *data, long *tmpdata, uint lo_ix, uint hi_ix)
 {
   uint mid = lo_ix + ((hi_ix - lo_ix) / 2);
 
