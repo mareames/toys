@@ -16,7 +16,7 @@
 
 const bool debug = true;
 
-// create a new node_t and configure it with its value
+// create a new node_t and configure it with input value
 node_t *
 new_node(int value)
 {

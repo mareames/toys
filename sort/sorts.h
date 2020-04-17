@@ -11,21 +11,21 @@
 
 #include <stdbool.h>
 
-enum { K                      = 1024,
-       M                      = K * K,
-       DEFAULT_NELTS          = 100 * M,
-       MAX_INSERT_SORT_NELTS  = 256 * K,
-       MIN_MERGE_SORT_NELTS   = 32,
-       MIN_QUICKSORT_NELTS    = 32,
-       QSORT_THREAD_THRESHOLD = 65536,
-       MAX_COUNTINGSORT_VALUE = 100 * M
+enum {
+  K                      = 1024,
+  M                      = K * K,
+  DEFAULT_NELTS          = 100 * M,
+  MAX_INSERT_SORT_NELTS  = 256 * K,
+  MIN_MERGE_SORT_NELTS   = 32,
+  MIN_QUICKSORT_NELTS    = 32,
+  QSORT_THREAD_THRESHOLD = 65536,
+  MAX_COUNTINGSORT_VALUE = 100 * M
 };
 
 typedef unsigned int    uint;
 typedef unsigned short  ushort;
 
-typedef struct
-{
+typedef struct {
   long  *data;
   uint   lo_ix;
   uint   hi_ix;
