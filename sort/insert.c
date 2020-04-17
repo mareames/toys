@@ -1,5 +1,5 @@
 //
-// misc_sorts.c
+// insert.c
 //
 // insertion sort (non recursive)
 //
@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include "sorts.h"
 
-/* basic insertion sort, no binary search */
+// basic insertion sort, no binary search
 void insertion_sort(long *data, uint lo_ix, uint hi_ix)
 {
   uint i, j;
@@ -20,8 +20,7 @@ void insertion_sort(long *data, uint lo_ix, uint hi_ix)
     tmp_elem = data[i];
     j = i;
 
-    while ((j > lo_ix) && (compare(&(data[j - 1]), &tmp_elem) > 0))
-    {
+    while ((j > lo_ix) && (compare(&(data[j - 1]), &tmp_elem) > 0)) {
       data[j] = data[j - 1];
       j--;
     }
@@ -30,8 +29,8 @@ void insertion_sort(long *data, uint lo_ix, uint hi_ix)
   }
 }
 
-/* use binary search to find the place for val in the
- * array data[lo_ix ... hi_ix] */
+// use binary search to find the place for val in the
+// array data[lo_ix ... hi_ix]
 int bsearch_find_idx(long *data, uint lo_ix, uint hi_ix, long val)
 {
   uint idx;
@@ -61,11 +60,11 @@ int bsearch_find_idx(long *data, uint lo_ix, uint hi_ix, long val)
       else if (val < loc) {
         hi = idx-1;
       }
-      else { /* if (val == data[idx]) { */
+      else {   // (val == data[idx])
         break; // this is where we belong!
       }
 
-     // see if it's time to break out of the loop early
+      // see if it's time to break out of the loop early
       if (val <= data[lo]) {
         idx = lo;
         break;
@@ -80,7 +79,7 @@ int bsearch_find_idx(long *data, uint lo_ix, uint hi_ix, long val)
   return idx;
 }
 
-/* slightly improved insertion sort, uses binary search */
+// improved insertion sort, uses binary search and memmove
 void insertion_sort_opt(long *data, uint lo_ix, uint hi_ix)
 {
   uint i, j;

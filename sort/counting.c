@@ -1,5 +1,5 @@
 //
-// countingsort.c
+// counting.c
 //
 // simple implementation of counting sort
 //

@@ -1,0 +1,33 @@
+main: seed is 4064
+main: sorting 1048576 elements
+
+sorting: sort method is libc qsort()
+finished: sorted 1048576 elements in 0.09 seconds
+
+sorting: sort method is insertion sort
+(skipping as this sort is O(n^2), i.e., painfully slow for so many elts)
+
+sorting: sort method is insertion sort opt
+finished: sorted 1048576 elements in 46.14 seconds
+
+sorting: sort method is quicksort
+finished: sorted 1048576 elements in 0.08 seconds
+
+sorting: sort method is quicksort opt
+finished: sorted 1048576 elements in 0.08 seconds
+
+sorting: sort method is quicksort opt mt
+finished: sorted 1048576 elements in 0.07 seconds
+
+sorting: sort method is heapsort
+finished: sorted 1048576 elements in 0.12 seconds
+
+sorting: sort method is merge sort
+finished: sorted 1048576 elements in 0.11 seconds
+
+sorting: sort method is merge sort opt
+finished: sorted 1048576 elements in 0.11 seconds
+
+sorting: sort method is counting sort
+finished: sorted 1048576 elements in 0.00 seconds
+

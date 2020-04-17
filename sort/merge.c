@@ -71,18 +71,16 @@ merge(long *data, long *tmpdata, uint lo_ix, uint hi_ix)
 
   // now copy back tmp on top of the elements we sorted
   memcpy((void*)&data[lo_ix], (void*)&tmp[0], nelts * sizeof(long));
-  /*
-  for (i = lo_ix, t = 0; t < nelts; i++, t++)
-    data[i] = tmp[t];
-  */
-
+  //
+  // for (i = lo_ix, t = 0; t < nelts; i++, t++)
+  //   data[i] = tmp[t];
 
   // free the tmp array if we allocated it above
   if (tmpdata == NULL)
     free(tmp);
 }
 
-/* basic merge sort (recursive) */
+// basic merge sort (recursive)
 void
 merge_sort(long *data, uint lo_ix, uint hi_ix)
 {
@@ -105,7 +103,7 @@ merge_sort(long *data, uint lo_ix, uint hi_ix)
   merge(data, NULL, lo_ix, hi_ix);
 }
 
-/* optimized merge sort (recursive) */
+// slightly optimized merge sort (recursive)
 void
 merge_sort_opt(long *data, long *tmpdata, uint lo_ix, uint hi_ix)
 {
@@ -113,7 +111,7 @@ merge_sort_opt(long *data, long *tmpdata, uint lo_ix, uint hi_ix)
 
   // OPTIMIZATION: use insertion sort for a small number of elements
   if ((hi_ix - lo_ix + 1) < MIN_MERGE_SORT_NELTS) {
-    insertion_sort(data, lo_ix, hi_ix);
+    insertion_sort_opt(data, lo_ix, hi_ix);
     return;
   }
 
